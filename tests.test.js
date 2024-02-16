@@ -1,5 +1,5 @@
 const {
-    createNewShip, checkShipStats, newShip, hitShip
+    createNewShip, checkShipStats, newShip, hitShip, GameBoard, createGameBoard
 
 } = require('./javascript');
 
@@ -12,8 +12,9 @@ test('Create New Ship' , () =>
 
 test("Check ship stats", () =>
 {
+    const newShip = createNewShip(3,0,false);
     expect(checkShipStats(newShip)).toStrictEqual(
-        [3, 1, false]
+        [3, 0, false]
     );
 });
 
@@ -55,4 +56,23 @@ test("Hit larger ship enough times and test if sunk is true" , () =>
     hitShip(ship); // Call hitShip fifce > Should sink now
     expect(checkShipStats(ship)).toEqual([5,5,true]);
 });
+
+test("Create New Gameboard and check properties", () =>
+{
+    const newGameBoard = createGameBoard(8,8);
+    //console.log(newGameBoard);
+    expect(newGameBoard.isBuilt).toEqual(true);
+});
+/*
+test("Create New Gameboard and place Ship", () =>
+{
+    const newGameBoard = createGameBoard(8,8);
+    //console.log(newGameBoard);
+    const ship = createNewShip(3,0,false);
+    //console.log(newGameBoard.boardPieces[3][3]);
+
+
+});*/
+
+
 
