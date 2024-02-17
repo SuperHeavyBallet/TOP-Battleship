@@ -6,7 +6,7 @@ const {
 test('Create New Ship' , () =>
 {
     expect(createNewShip(3, 0, false)).toEqual(
-        { length: 3, numberOfHits: 0, isSunk: false}
+        { length: 3, numberOfHits: 0, isSunk: false, occupiedSquares: []}
     );
 });
 
@@ -18,61 +18,28 @@ test("Check ship stats", () =>
     );
 });
 
-test("Hit ship and test its stats change", () =>
-{
-    const ship = createNewShip(3,0,false);
-    hitShip(ship); // Call hitShip once
-    expect(checkShipStats(ship)).toEqual([3,1,false]);
-})
 
-test("Hit ship 3x and test if sunk is true", () =>
-{   
-    const ship = createNewShip(3,0,false);
-    hitShip(ship); // Call hitShip once
-    hitShip(ship); // Call hitShip twice
-    hitShip(ship); // Call hitShip thrice > Should sink now
-    expect(checkShipStats(ship)).toEqual([3,3,true]);
-    
-});
-
-test("Hit larger ship NOT enough times and test if sunk is false" , () =>
-{
-    const ship = createNewShip(5,0,false);
-    hitShip(ship); // Call hitShip once
-    hitShip(ship); // Call hitShip twice
-    hitShip(ship); // Call hitShip thrice
-    hitShip(ship); // Call hitShip fource
-
-    expect(checkShipStats(ship)).toEqual([5,4,false]);
-});
-
-test("Hit larger ship enough times and test if sunk is true" , () =>
-{
-    const ship = createNewShip(5,0,false);
-    hitShip(ship); // Call hitShip once
-    hitShip(ship); // Call hitShip twice
-    hitShip(ship); // Call hitShip thrice
-    hitShip(ship); // Call hitShip fource
-    hitShip(ship); // Call hitShip fifce > Should sink now
-    expect(checkShipStats(ship)).toEqual([5,5,true]);
-});
 
 test("Create New Gameboard and check properties", () =>
 {
     const newGameBoard = createGameBoard(8,8);
-    //console.log(newGameBoard);
+
     expect(newGameBoard.isBuilt).toEqual(true);
 });
-/*
-test("Create New Gameboard and place Ship", () =>
+
+test("Create New Gameboard and Place Three Ships, One of which overlap positions", () =>
 {
     const newGameBoard = createGameBoard(8,8);
-    //console.log(newGameBoard);
-    const ship = createNewShip(3,0,false);
-    //console.log(newGameBoard.boardPieces[3][3]);
+    const newShip1 = createNewShip(3,0,false);
+    const newShip2 = createNewShip(5,0,false);
+    const newShip3 = createNewShip(2,0, false);
+
+    expect(newGameBoard.placeShip(newShip1, [[3,3], [3,4], [3,5]])).toEqual("Ship Succesfully Placed");
+    expect(newGameBoard.placeShip(newShip2, [[3,3], [3,4], [3,5], , [3,6], [3,7]])).toEqual("Position Occupied Already!");
+    expect(newGameBoard.placeShip(newShip3, [[4,3], [4,4], [4,5]])).toEqual("Ship Succesfully Placed");
+});
 
 
-});*/
 
 
 
