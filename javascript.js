@@ -1,3 +1,66 @@
+///////////////////// Player
+class Player
+{
+    constructor(playerName, playerShips, sizeOfFleet, shipLengths, hitsRemaining)
+    {
+        this.playerName = playerName;
+        this.playerShips = playerShips;
+        this.fleet = this.createShipFleet(sizeOfFleet, shipLengths);
+        this.hitsAvailable = this.calculateHitsAvailable();
+        this.hitsRemaining = this.calculateHitsRemaining();
+        this.allShipsSunk = false;
+        this.isPlayerTurn = true;
+    }
+
+    calculateHitsAvailable()
+    {
+        let totalHitsAvailable = 0;
+
+        for (let i = 0; i < this.playerShips.length; i++)
+        {
+            const thisShipHealth = this.playerShips[i].length;
+            totalHitsAvailable = totalHitsAvailable + thisShipHealth;
+        }
+
+        return totalHitsAvailable;
+    }
+
+    calculateHitsRemaining()
+    {
+        let totalHitsTaken = 0;
+
+        for (let i = 0; i < this.playerShips.length; i++)
+        {
+            const thisShipHits = this.playerShips[i].numberOfHits;
+            totalHitsTaken = totalHitsTaken + thisShipHits;
+
+            
+        }
+
+        const hitsRemaining = this.hitsAvailable - totalHitsTaken;
+
+        if (hitsRemaining <= 0)
+        {
+            this.allShipsSunk = true;
+        }
+
+        return hitsRemaining;
+    }
+
+    // Create the entire fleet for a player, args are total number and an array of the ship lengths
+    createShipFleet(numberOfShips, shipLengths)
+    {
+
+        for (let i = 0; i < numberOfShips; i++)
+        {
+            const currentShipLength = shipLengths[i];
+            const newShip = createNewShip(currentShipLength, 0, false);
+            this.playerShips.push(newShip);
+        }
+
+    }
+}
+
 ///////////////////// Ship
 class Ship{
 
@@ -123,8 +186,6 @@ class GameBoard{
     }
 
     placeShip(ship, position)
-
-    
     {
 
         let aSpotIsTaken = false;
@@ -181,13 +242,29 @@ class GameBoard{
             console.log("Hit a ship!");
             console.log(this.boardPieces[row][col].val);
 
-            hitShip(this.boardPieces[row][col].val, this.boardPieces[row][col])
+            hitShip(this.boardPieces[row][col].val, this.boardPieces[row][col]);
 
         }
         else
         {
             console.log("Miss!");
+            this.hitMiss(position);
         }
+    }
+
+    hitMiss(position)
+    {
+
+        switchTurns();
+
+        if (!this.boardPieces[position[0]][position[1]].hit)
+        {
+            this.boardPieces[position[0]][position[1]].hit = true;
+        }
+        else{
+            console.log("Already Missed!");
+        }
+
     }
 
 
@@ -198,13 +275,76 @@ function createGameBoard(rows, columns)
     return new GameBoard(rows, columns);
 }
 
+function switchTurns()
+{
+    if (playerOne.isPlayerTurn)
+    {
+        playerOne.isPlayerTurn = false;
+    }
+    else if (!playerOne.isPlayerTurn)
+    {
+        playerOne.isPlayerTurn = true;
+    }
+}
+
+function computerWait()
+{
+    const waitTime = Math.floor(Math.random() * 1000);
+    console.log(waitTime);
+    //setTimeout(generateComputerMove, 0);
+    generateComputerMove();
+}
+
+function generateComputerMove()
+{
+    let availableSquares = [];
+    let hitSquares = [];
+
+    for (let i = 0; i < newGameBoard.boardPieces.length; i++)
+    {
+        for (let j = 0; j < newGameBoard.boardPieces[i].length; j++)
+        {
+            if (!newGameBoard.boardPieces[i][j].hit)
+            {
+                availableSquares.push(newGameBoard.boardPieces[i][j]);
+            }
+            else if (newGameBoard.boardPieces[i][j].hit)
+            {
+                hitSquares.push(newGameBoard.boardPieces[i][j]);
+            }
+        }
+    }
+
+    console.log("Hit: ", hitSquares);
+    console.log("Available: " ,availableSquares);
+
+    const randomNumber = Math.floor(Math.random() * availableSquares.length);
+    console.log(randomNumber);
+    console.log("Selected Square: ", availableSquares[randomNumber]);
+}
+
 
 //////////////////////
-const newShip = createNewShip(3,0,false);
+
+const playerOne = new Player("Player One", [], 5, [1,1,2,3,4],0);
+
+
+
+console.log(playerOne);
+
+
 const newGameBoard = createGameBoard(8,8);
 
-newGameBoard.placeShip(newShip, [[3,3], [3,4], [3,5]]);
-newGameBoard.placeShip(newShip, [[1,3], [1,4], [1,5]]);
+console.log("Player Turn" , playerOne.isPlayerTurn);
+newGameBoard.recieveAttack([3,3]);
+console.log("Player Turn" , playerOne.isPlayerTurn);
+
+computerWait();
+
+//newGameBoard.placeShip(playerOne.playerShips[1], [[3,3]]);
+
+//newGameBoard.placeShip(newShip, [[3,3], [3,4], [3,5]]);
+//newGameBoard.placeShip(newShip, [[1,3], [1,4], [1,5]]);
 
 //newGameBoard.recieveAttack([3,3]);
 
@@ -212,7 +352,7 @@ newGameBoard.placeShip(newShip, [[1,3], [1,4], [1,5]]);
 module.exports =
 {
     createNewShip,
-    newShip,
+    //newShip,
     checkShipStats,
     hitShip,
     GameBoard,
