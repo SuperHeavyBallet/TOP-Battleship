@@ -1,7 +1,45 @@
+class GameManager
+{
+    constructor(playerOne)
+    {
+        this.playerOne = playerOne;
+    }
+
+    switchTurns()
+    {
+
+        const playerTurnIndicator = document.getElementById("player-turn-indicator");
+        const computerTurnIndicator = document.getElementById("computer-turn-indicator");
+        const gameBoardLock = document.getElementById("gameboard-lock");
+
+        if (playerOne.isPlayerTurn)
+        {
+            gameBoardLock.classList.remove("hidden");
+            playerOne.isPlayerTurn = false;
+            playerTurnIndicator.textContent = ("Not Your Turn");
+            computerTurnIndicator.textContent = ("Your Turn Now");
+            computerWait();
+        }
+        else if (!playerOne.isPlayerTurn)
+        {
+            
+            gameBoardLock.classList.add("hidden");
+            playerTurnIndicator.textContent = ("Your Turn Now");
+            computerTurnIndicator.textContent = ("Not Your Turn");
+            playerOne.isPlayerTurn = true;
+        }
+
+        console.log("Player TUrn?" , playerOne.isPlayerTurn);
+    }
+
+
+
+}
+
 ///////////////////// Player
 class Player
 {
-    constructor(playerName, playerShips, sizeOfFleet, shipLengths, hitsRemaining)
+    constructor(playerName, playerShips, sizeOfFleet, shipLengths, isPlayerTurn)
     {
         this.playerName = playerName;
         this.playerShips = playerShips;
@@ -9,7 +47,21 @@ class Player
         this.hitsAvailable = this.calculateHitsAvailable();
         this.hitsRemaining = this.calculateHitsRemaining();
         this.allShipsSunk = false;
-        this.isPlayerTurn = true;
+        this.isPlayerTurn = isPlayerTurn;
+    }
+
+    placeShips(playerBoard)
+    {
+        console.log(this.playerShips);
+
+        playerBoard.placeShip(this.playerShips[0], [[3,3]]);
+        playerBoard.placeShip(this.playerShips[1], [[7,6]]);
+        playerBoard.placeShip(this.playerShips[2], [[1,1],[1,2]]);
+        playerBoard.placeShip(this.playerShips[3], [[1,4],[1,5],[1,6]]);
+        playerBoard.placeShip(this.playerShips[4], [[6,4],[6,5],[6,6],[6,7]]);
+     
+
+
     }
 
     calculateHitsAvailable()
@@ -130,12 +182,75 @@ function hitShip(ship,position)
 
 class GameBoard{
 
-    constructor(numOfRows, numOfColumns)
+    constructor(playerName, numOfRows, numOfColumns)
     {
+        this.playerName = playerName;
         this.boardPieces = this.createBoardPieces(numOfRows, numOfColumns);
         this.boardMatrix = this.createBoardMatrix(numOfRows, numOfColumns);
+        this.boardPieceElements = this.createDomElements(this.boardPieces);
         this.isBuilt = true;
+
         
+    }
+
+    createDomElements(boardPieces)
+    {
+        const boardContainer = document.getElementById(`${this.playerName}-gameboard-container`);
+        console.log(boardContainer);
+
+        let boardPieceElements = [];
+
+        for (let i = 0; i < boardPieces.length; i++)
+        {
+            const boardRow = document.createElement('div');
+            boardPieceElements.push([]);
+            boardRow.setAttribute("id", "gameboard-row");
+
+            for (let j = 0; j < boardPieces[i].length; j++)
+            {
+                const boardSquare = document.createElement('div');
+
+                boardSquare.classList.add("gameboard-square");
+                boardRow.appendChild(boardSquare);
+                boardPieceElements[i].push(boardSquare);
+
+                
+
+            }
+
+            boardContainer.appendChild(boardRow);
+        }
+
+        this.assignClickOnSquares(boardPieceElements);
+        return boardPieceElements;
+    }
+
+    assignClickOnSquares(boardSquares)
+    {
+        console.log(boardSquares);
+        for (let i = 0; i < boardSquares.length; i++)
+        {
+            for (let j = 0; j < boardSquares[i].length; j++)
+            {
+                boardSquares[i][j].addEventListener("click", () =>
+                {
+
+                    if (this.boardPieces[i][j].hasShip)
+                    {
+                        boardSquares[i][j].classList.remove("gameboard-square");
+                        boardSquares[i][j].classList.add("gameboard-square-hit");
+                    }
+                    else
+                    {
+                        boardSquares[i][j].classList.remove("gameboard-square");
+                        boardSquares[i][j].classList.add("gameboard-square-miss");
+                        gameManager.switchTurns();
+                        
+                    }
+                    
+                })
+            }
+        }
     }
 
 
@@ -150,8 +265,6 @@ class GameBoard{
         {
             boardPieces.push([]);
             
-            //boardPieces[i].push(`Row: ${i+1}`);
-
             for (let j = 0; j < columns; j++)
             {
                 const boardPiece = {
@@ -165,6 +278,7 @@ class GameBoard{
             }
         }
 
+        
         return boardPieces;
     }
 
@@ -190,6 +304,9 @@ class GameBoard{
 
         let aSpotIsTaken = false;
 
+        console.log(ship);
+        console.log(position);
+
         for (let i = 0; i < ship.length; i++)
         {
             const row = position[i][0];
@@ -200,7 +317,7 @@ class GameBoard{
             {
                 aSpotIsTaken = true;
                 console.log("Position Occupied Already!");
-                return "Position Occupied Already!";
+
 
             }
         }
@@ -217,7 +334,8 @@ class GameBoard{
                 positionPiece.hasShip = true;
                 this.boardMatrix[row][col] =  'X';
                 ship.occupiedSquares.push([row,col]);
-                return "Ship Succesfully Placed";
+                this.boardPieceElements[row][col].textContent = "x";
+
 
             }
         
@@ -229,13 +347,13 @@ class GameBoard{
     recieveAttack(position)
     {
         
-        const row = position[0];
-        const col = position[1];
+        const row = position.position[0];
+        const col = position.position[1];
 
         console.log(position);
         console.log(row);
         console.log(col);
-        console.log(this.boardPieces[row][col]);
+
 
         if (this.boardPieces[row][col].hasShip)
         {
@@ -243,25 +361,33 @@ class GameBoard{
             console.log(this.boardPieces[row][col].val);
 
             hitShip(this.boardPieces[row][col].val, this.boardPieces[row][col]);
+            
+            if (!playerOne.isPlayerTurn)
+            {
+                playerOneGameBoard.boardPieceElements[row][col].classList.add("gameboard-square-hit");
+                computerWait();
+            }
 
         }
         else
         {
             console.log("Miss!");
-            this.hitMiss(position);
+            this.hitMiss(position.position);
+            gameManager.switchTurns();
         }
     }
 
     hitMiss(position)
     {
-
-        switchTurns();
-
+        console.log(position);
         if (!this.boardPieces[position[0]][position[1]].hit)
         {
             this.boardPieces[position[0]][position[1]].hit = true;
+            playerOneGameBoard.boardPieceElements[position[0]][position[1]].classList.add("gameboard-square-miss");
+            
         }
         else{
+            
             console.log("Already Missed!");
         }
 
@@ -270,29 +396,19 @@ class GameBoard{
 
 }
 
-function createGameBoard(rows, columns)
+function createGameBoard(name, rows, columns)
 {
-    return new GameBoard(rows, columns);
+    return new GameBoard(name, rows, columns);
 }
 
-function switchTurns()
-{
-    if (playerOne.isPlayerTurn)
-    {
-        playerOne.isPlayerTurn = false;
-    }
-    else if (!playerOne.isPlayerTurn)
-    {
-        playerOne.isPlayerTurn = true;
-    }
-}
+
 
 function computerWait()
 {
-    const waitTime = Math.floor(Math.random() * 1000);
+    const waitTime = Math.floor(Math.random() * 3000);
     console.log(waitTime);
-    //setTimeout(generateComputerMove, 0);
-    generateComputerMove();
+    setTimeout(generateComputerMove, waitTime);
+    //generateComputerMove();
 }
 
 function generateComputerMove()
@@ -300,17 +416,17 @@ function generateComputerMove()
     let availableSquares = [];
     let hitSquares = [];
 
-    for (let i = 0; i < newGameBoard.boardPieces.length; i++)
+    for (let i = 0; i < playerOneGameBoard.boardPieces.length; i++)
     {
-        for (let j = 0; j < newGameBoard.boardPieces[i].length; j++)
+        for (let j = 0; j < playerOneGameBoard.boardPieces[i].length; j++)
         {
-            if (!newGameBoard.boardPieces[i][j].hit)
+            if (!playerOneGameBoard.boardPieces[i][j].hit)
             {
-                availableSquares.push(newGameBoard.boardPieces[i][j]);
+                availableSquares.push(playerOneGameBoard.boardPieces[i][j]);
             }
-            else if (newGameBoard.boardPieces[i][j].hit)
+            else if (playerOneGameBoard.boardPieces[i][j].hit)
             {
-                hitSquares.push(newGameBoard.boardPieces[i][j]);
+                hitSquares.push(playerOneGameBoard.boardPieces[i][j]);
             }
         }
     }
@@ -321,34 +437,38 @@ function generateComputerMove()
     const randomNumber = Math.floor(Math.random() * availableSquares.length);
     console.log(randomNumber);
     console.log("Selected Square: ", availableSquares[randomNumber]);
+
+    playerOneGameBoard.recieveAttack(availableSquares[randomNumber]);
 }
 
 
 //////////////////////
 
-const playerOne = new Player("Player One", [], 5, [1,1,2,3,4],0);
+const playerOne = new Player("Player One", [], 5, [1,1,2,3,4], true);
+const playerTwo = new Player("Computer", [], 5, [1,1,2,3,4], false);
+
+
+const gameManager = new GameManager(playerOne);
 
 
 
 console.log(playerOne);
+console.log(playerTwo);
 
 
-const newGameBoard = createGameBoard(8,8);
-
-console.log("Player Turn" , playerOne.isPlayerTurn);
-newGameBoard.recieveAttack([3,3]);
-console.log("Player Turn" , playerOne.isPlayerTurn);
-
-computerWait();
-
-//newGameBoard.placeShip(playerOne.playerShips[1], [[3,3]]);
-
-//newGameBoard.placeShip(newShip, [[3,3], [3,4], [3,5]]);
-//newGameBoard.placeShip(newShip, [[1,3], [1,4], [1,5]]);
-
-//newGameBoard.recieveAttack([3,3]);
 
 
+const playerOneGameBoard = createGameBoard("player-one", 8,8);
+console.log(playerOneGameBoard.boardPieces);
+const playerTwoGameBoard = createGameBoard("player-two", 8,8);
+
+playerOne.placeShips(playerOneGameBoard);
+
+
+// newGameBoard.recieveAttack([3,3]);
+
+
+/*
 module.exports =
 {
     createNewShip,
@@ -358,4 +478,4 @@ module.exports =
     GameBoard,
     createGameBoard
 
-};
+};*/
