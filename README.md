@@ -1,28 +1,20 @@
 # TOP-Battleship
 
-// Set up process
+ToDo:
 
-- Create a template class for ships
--- Each class should be an object with properties:
---- length (int)
---- number of times hit (int)
---- sunk or not (bool)
+Update Text UI
+- /// Fix Turn Display, probably just inverse /// Remove Entirely
+- /// Create a simple Turn Indicator pointing to whichever screen is active - Wait / Go
+- /// Update Hits Remaining Counter - Works for Enemy Attacks
+- /// Remove Player One/Two - Your Fleet/Enemy Fleet is enough indication 
 
-function takeHit()
-{
-    number of times hit ++;
+Update aesthetic
+- Potentially go with old school metal and bevels with Hazard stripes :P
 
-    isSunk();
-
-}
-
-function isSunk()
-{
-     if number of times hit = length
-    {
-        sunk = true
-    }
-}
+- /// Fix Player ships not turning red on hit
+- Work on end state when all ships destroyed
+- Create Prompt that all ships are destroyed
+- Potentially refine ai to choose recursively closer squares after a hit
 
 
 

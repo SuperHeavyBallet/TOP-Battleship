@@ -11,32 +11,38 @@
     <div class="game-container">
     <div id="player-one-container" class="player-container one">
         <div id="player-one-stats-container" class="player-stats-container one">
-            <h5 id="player-name">Player One</h5>
-            <h6>Hits Remaining: 11</h6>
-            <h6 id="player-turn-indicator">Your Turn</h6>
+            <h6 id="hits-remaining-player">Hits Remaining: 11</h6>
+            <h6 id="player-turn-indicator">WAIT</h6>
 
         </div>
 
+        <div>Your Fleet:</div>
         <div id="player-one-gameboard-container" class="gameboard-container">
             
-            
+
+            <div id="gameboard-lock-player" class="gameboard-lock-player"></div>
+
+           
         </div>
+        
     </div>
 
     <div id="player-two-container" class="player-container two">
         <div id="player-two-stats-container" class="player-stats-container two">
-            <h5 id="player-name">Player Two</h5>
-            <h6>Hits Remaining: 11</h6>
-            <h6 id="computer-turn-indicator">Not Your Turn</h6>
+            <h6 id="hits-remaining-computer">Hits Remaining: 11</h6>
+            <h6 id="computer-turn-indicator">GO</h6>
 
         </div>
+
+        <div>Enemy Fleet:</div>
 
         <div id="player-two-gameboard-container" class="gameboard-container">
-            <div id="gameboard-lock" class="gameboard-lock hidden">
-                
-            </div>
+           
+
+            <div id="gameboard-lock" class="gameboard-lock hidden"></div>
             
         </div>
+       
     </div>
 
 </div>

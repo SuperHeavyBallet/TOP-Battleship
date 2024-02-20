@@ -10,22 +10,31 @@ class GameManager
 
         const playerTurnIndicator = document.getElementById("player-turn-indicator");
         const computerTurnIndicator = document.getElementById("computer-turn-indicator");
-        const gameBoardLock = document.getElementById("gameboard-lock");
+        const gameBoardLockPlayer = document.getElementById("gameboard-lock");
+
 
         if (playerOne.isPlayerTurn)
         {
-            gameBoardLock.classList.remove("hidden");
+
+            gameBoardLockPlayer.classList.remove("hidden");
+
+            playerTurnIndicator.textContent = ("GO");
+            computerTurnIndicator.textContent = ("WAIT");
+
             playerOne.isPlayerTurn = false;
-            playerTurnIndicator.textContent = ("Not Your Turn");
-            computerTurnIndicator.textContent = ("Your Turn Now");
+            
             computerWait();
         }
         else if (!playerOne.isPlayerTurn)
         {
             
-            gameBoardLock.classList.add("hidden");
-            playerTurnIndicator.textContent = ("Your Turn Now");
-            computerTurnIndicator.textContent = ("Not Your Turn");
+            gameBoardLockPlayer.classList.add("hidden");
+
+            
+
+            playerTurnIndicator.textContent = ("WAIT");
+            computerTurnIndicator.textContent = ("GO");
+
             playerOne.isPlayerTurn = true;
         }
 
@@ -234,21 +243,27 @@ class GameBoard{
             {
                 boardSquares[i][j].addEventListener("click", () =>
                 {
+                    console.log(this.boardPieces[i][j]);
 
-                    if (this.boardPieces[i][j].hasShip)
-                    {
-                        boardSquares[i][j].classList.remove("gameboard-square");
-                        boardSquares[i][j].classList.add("gameboard-square-hit");
-                    }
-                    else
-                    {
-                        boardSquares[i][j].classList.remove("gameboard-square");
-                        boardSquares[i][j].classList.add("gameboard-square-miss");
-                        gameManager.switchTurns();
-                        
-                    }
+                        if (this.boardPieces[i][j].hasShip)
+                        {
+                            boardSquares[i][j].classList.remove("ship-square");
+                            boardSquares[i][j].classList.remove("gameboard-square");
+                            boardSquares[i][j].classList.add("gameboard-square-hit");
+                            playerTwoGameBoard.recieveAttack(this.boardPieces[i][j], playerTwoGameBoard);
+                            
+                        }
+                        else
+                        {
+                            boardSquares[i][j].classList.remove("gameboard-square");
+                            boardSquares[i][j].classList.add("gameboard-square-miss");
+                            playerTwoGameBoard.recieveAttack(this.boardPieces[i][j], playerTwoGameBoard);
+                            
+                            
+                        }
                     
-                })
+                    
+                }, {once: true});
             }
         }
     }
@@ -334,7 +349,8 @@ class GameBoard{
                 positionPiece.hasShip = true;
                 this.boardMatrix[row][col] =  'X';
                 ship.occupiedSquares.push([row,col]);
-                this.boardPieceElements[row][col].textContent = "x";
+                //this.boardPieceElements[row][col].textContent = "x";
+                this.boardPieceElements[row][col].classList.add("ship-square");
 
 
             }
@@ -344,7 +360,7 @@ class GameBoard{
         
     }
 
-    recieveAttack(position)
+    recieveAttack(position, playerGameBoard)
     {
         
         const row = position.position[0];
@@ -362,34 +378,53 @@ class GameBoard{
 
             hitShip(this.boardPieces[row][col].val, this.boardPieces[row][col]);
             
-            if (!playerOne.isPlayerTurn)
-            {
-                playerOneGameBoard.boardPieceElements[row][col].classList.add("gameboard-square-hit");
-                computerWait();
-            }
+           
+                playerGameBoard.boardPieceElements[row][col].classList.remove("ship-square");
+                playerGameBoard.boardPieceElements[row][col].classList.add("gameboard-square-hit");
+
+                if (playerGameBoard === playerOneGameBoard)
+                {
+                    playerOne.hitsRemaining -=1;
+                    const hitsRemainingPlayer = document.getElementById("hits-remaining-player");
+                    hitsRemainingPlayer.textContent = (`Hits Remaining: ${playerOne.hitsRemaining}`);
+                    computerWait();
+                }
+
+                else if (playerGameBoard === playerTwoGameBoard)
+                {
+                    playerTwo.hitsRemaining -=1;
+                    const hitsRemainingComputer = document.getElementById("hits-remaining-computer");
+                    console.log(hitsRemainingComputer);
+                    hitsRemainingComputer.textContent = (`Hits Remaining: ${playerTwo.hitsRemaining}`);
+                }
+                
+            
 
         }
         else
         {
             console.log("Miss!");
-            this.hitMiss(position.position);
-            gameManager.switchTurns();
+            this.hitMiss(position.position, playerGameBoard);
         }
     }
 
-    hitMiss(position)
+    hitMiss(position, playerGameBoard)
     {
         console.log(position);
         if (!this.boardPieces[position[0]][position[1]].hit)
         {
+            
             this.boardPieces[position[0]][position[1]].hit = true;
-            playerOneGameBoard.boardPieceElements[position[0]][position[1]].classList.add("gameboard-square-miss");
+            console.log(this.boardPieces[position[0]][position[1]]);
+            playerGameBoard.boardPieceElements[position[0]][position[1]].classList.add("gameboard-square-miss");
             
         }
         else{
             
             console.log("Already Missed!");
         }
+
+        gameManager.switchTurns();
 
     }
 
@@ -438,7 +473,7 @@ function generateComputerMove()
     console.log(randomNumber);
     console.log("Selected Square: ", availableSquares[randomNumber]);
 
-    playerOneGameBoard.recieveAttack(availableSquares[randomNumber]);
+    playerOneGameBoard.recieveAttack(availableSquares[randomNumber], playerOneGameBoard);
 }
 
 
@@ -463,6 +498,7 @@ console.log(playerOneGameBoard.boardPieces);
 const playerTwoGameBoard = createGameBoard("player-two", 8,8);
 
 playerOne.placeShips(playerOneGameBoard);
+playerTwo.placeShips(playerTwoGameBoard);
 
 
 // newGameBoard.recieveAttack([3,3]);
