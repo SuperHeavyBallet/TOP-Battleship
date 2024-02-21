@@ -387,7 +387,20 @@ class GameBoard{
                     playerOne.hitsRemaining -=1;
                     const hitsRemainingPlayer = document.getElementById("hits-remaining-player");
                     hitsRemainingPlayer.textContent = (`Hits Remaining: ${playerOne.hitsRemaining}`);
-                    computerWait();
+                    if (playerOne.hitsRemaining < 1)
+                    {
+                        gameOverLockScreen("player");
+                        setTimeout(function()
+                        {
+                            gameOverAlert("player");
+                        }, 0);
+                        
+                    }
+                    else
+                    {
+                        computerWait();
+                    }
+                    
                 }
 
                 else if (playerGameBoard === playerTwoGameBoard)
@@ -396,6 +409,14 @@ class GameBoard{
                     const hitsRemainingComputer = document.getElementById("hits-remaining-computer");
                     console.log(hitsRemainingComputer);
                     hitsRemainingComputer.textContent = (`Hits Remaining: ${playerTwo.hitsRemaining}`);
+                    if (playerTwo.hitsRemaining < 1)
+                    {
+                        gameOverLockScreen("computer");
+                        setTimeout(function()
+                        {
+                            gameOverAlert("computer");
+                        }, 0);
+                    }
                 }
                 
             
@@ -474,6 +495,35 @@ function generateComputerMove()
     console.log("Selected Square: ", availableSquares[randomNumber]);
 
     playerOneGameBoard.recieveAttack(availableSquares[randomNumber], playerOneGameBoard);
+}
+
+function gameOverLockScreen(loser)
+{
+    const gameBoardLockPlayer = document.getElementById("gameboard-lock-player");
+    const gameBoardLockComputer = document.getElementById("gameboard-lock");
+
+    gameBoardLockPlayer.classList.remove("hidden");
+    gameBoardLockComputer.classList.remove("hidden");
+
+    gameBoardLockPlayer.classList.add("gameboard-gameover-lock");
+    gameBoardLockComputer.classList.add("gameboard-gameover-lock");
+
+    
+}
+
+function gameOverAlert(loser)
+{
+
+    
+        if (loser === "player")
+        {
+                alert("You Lost!");   
+        }
+        else if (loser === "computer")
+        {
+                alert("You Won!");
+        }
+   
 }
 
 
