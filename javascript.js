@@ -5,6 +5,12 @@ class GameManager
         this.playerOne = playerOne;
     }
 
+    createGameBoard(name, rows, columns)
+    {
+        return new GameBoard(name, rows, columns);
+    }
+
+
     switchTurns()
     {
 
@@ -23,7 +29,7 @@ class GameManager
 
             playerOne.isPlayerTurn = false;
             
-            computerWait();
+            this.computerWait();
         }
         else if (!playerOne.isPlayerTurn)
         {
@@ -39,6 +45,73 @@ class GameManager
         }
 
         console.log("Player TUrn?" , playerOne.isPlayerTurn);
+    }
+
+    computerWait()
+    {
+        const waitTime = Math.floor(Math.random() * 3000);
+        console.log(waitTime);
+        setTimeout(this.generateComputerMove, waitTime);
+        //generateComputerMove();
+    }
+
+    generateComputerMove()
+    {
+        let availableSquares = [];
+        let hitSquares = [];
+
+        for (let i = 0; i < playerOneGameBoard.boardPieces.length; i++)
+        {
+            for (let j = 0; j < playerOneGameBoard.boardPieces[i].length; j++)
+            {
+                if (!playerOneGameBoard.boardPieces[i][j].hit)
+                {
+                    availableSquares.push(playerOneGameBoard.boardPieces[i][j]);
+                }
+                else if (playerOneGameBoard.boardPieces[i][j].hit)
+                {
+                    hitSquares.push(playerOneGameBoard.boardPieces[i][j]);
+                }
+            }
+        }
+
+        console.log("Hit: ", hitSquares);
+        console.log("Available: " ,availableSquares);
+
+        const randomNumber = Math.floor(Math.random() * availableSquares.length);
+        console.log(randomNumber);
+        console.log("Selected Square: ", availableSquares[randomNumber]);
+
+        playerOneGameBoard.recieveAttack(availableSquares[randomNumber], playerOneGameBoard);
+    }
+
+    gameOverLockScreen(loser)
+    {
+        const gameBoardLockPlayer = document.getElementById("gameboard-lock-player");
+        const gameBoardLockComputer = document.getElementById("gameboard-lock");
+
+        gameBoardLockPlayer.classList.remove("hidden");
+        gameBoardLockComputer.classList.remove("hidden");
+
+        gameBoardLockPlayer.classList.add("gameboard-gameover-lock");
+        gameBoardLockComputer.classList.add("gameboard-gameover-lock");
+
+        
+    }
+
+    gameOverAlert(loser)
+    {
+
+        
+            if (loser === "player")
+            {
+                    alert("You Lost!");   
+            }
+            else if (loser === "computer")
+            {
+                    alert("You Won!");
+            }
+    
     }
 
 
@@ -389,16 +462,16 @@ class GameBoard{
                     hitsRemainingPlayer.textContent = (`Hits Remaining: ${playerOne.hitsRemaining}`);
                     if (playerOne.hitsRemaining < 1)
                     {
-                        gameOverLockScreen("player");
+                        gameManager.gameOverLockScreen("player");
                         setTimeout(function()
                         {
-                            gameOverAlert("player");
-                        }, 0);
+                            gameManager.gameOverAlert("player");
+                        }, 10);
                         
                     }
                     else
                     {
-                        computerWait();
+                        gameManager.computerWait();
                     }
                     
                 }
@@ -411,11 +484,11 @@ class GameBoard{
                     hitsRemainingComputer.textContent = (`Hits Remaining: ${playerTwo.hitsRemaining}`);
                     if (playerTwo.hitsRemaining < 1)
                     {
-                        gameOverLockScreen("computer");
+                        gameManager.gameOverLockScreen("computer");
                         setTimeout(function()
                         {
-                            gameOverAlert("computer");
-                        }, 0);
+                            gameManager.gameOverAlert("computer");
+                        }, 10);
                     }
                 }
                 
@@ -452,64 +525,15 @@ class GameBoard{
 
 }
 
-function createGameBoard(name, rows, columns)
-{
-    return new GameBoard(name, rows, columns);
-}
 
 
 
-function computerWait()
-{
-    const waitTime = Math.floor(Math.random() * 3000);
-    console.log(waitTime);
-    setTimeout(generateComputerMove, waitTime);
-    //generateComputerMove();
-}
 
-function generateComputerMove()
-{
-    let availableSquares = [];
-    let hitSquares = [];
 
-    for (let i = 0; i < playerOneGameBoard.boardPieces.length; i++)
-    {
-        for (let j = 0; j < playerOneGameBoard.boardPieces[i].length; j++)
-        {
-            if (!playerOneGameBoard.boardPieces[i][j].hit)
-            {
-                availableSquares.push(playerOneGameBoard.boardPieces[i][j]);
-            }
-            else if (playerOneGameBoard.boardPieces[i][j].hit)
-            {
-                hitSquares.push(playerOneGameBoard.boardPieces[i][j]);
-            }
-        }
-    }
 
-    console.log("Hit: ", hitSquares);
-    console.log("Available: " ,availableSquares);
 
-    const randomNumber = Math.floor(Math.random() * availableSquares.length);
-    console.log(randomNumber);
-    console.log("Selected Square: ", availableSquares[randomNumber]);
 
-    playerOneGameBoard.recieveAttack(availableSquares[randomNumber], playerOneGameBoard);
-}
 
-function gameOverLockScreen(loser)
-{
-    const gameBoardLockPlayer = document.getElementById("gameboard-lock-player");
-    const gameBoardLockComputer = document.getElementById("gameboard-lock");
-
-    gameBoardLockPlayer.classList.remove("hidden");
-    gameBoardLockComputer.classList.remove("hidden");
-
-    gameBoardLockPlayer.classList.add("gameboard-gameover-lock");
-    gameBoardLockComputer.classList.add("gameboard-gameover-lock");
-
-    
-}
 
 function gameOverAlert(loser)
 {
@@ -543,9 +567,9 @@ console.log(playerTwo);
 
 
 
-const playerOneGameBoard = createGameBoard("player-one", 8,8);
+const playerOneGameBoard = gameManager.createGameBoard("player-one", 8,8);
 console.log(playerOneGameBoard.boardPieces);
-const playerTwoGameBoard = createGameBoard("player-two", 8,8);
+const playerTwoGameBoard = gameManager.createGameBoard("player-two", 8,8);
 
 playerOne.placeShips(playerOneGameBoard);
 playerTwo.placeShips(playerTwoGameBoard);
