@@ -3,6 +3,7 @@ class GameManager
     constructor(playerOne)
     {
         this.playerOne = playerOne;
+
     }
 
     createGameBoard(name, rows, columns)
@@ -96,6 +97,8 @@ class GameManager
         gameBoardLockPlayer.classList.add("gameboard-gameover-lock");
         gameBoardLockComputer.classList.add("gameboard-gameover-lock");
 
+        this.replayButton();
+
         
     }
 
@@ -112,6 +115,18 @@ class GameManager
                     alert("You Won!");
             }
     
+    }
+
+    replayButton()
+    {
+        const replayButton = document.getElementById("play-again-button");
+        replayButton.classList.remove("hidden");
+
+        replayButton.addEventListener('click', () =>
+        {
+            console.log("Clicked Replay");
+            //createGame();
+        });
     }
 
 
@@ -488,7 +503,8 @@ class GameBoard{
                         setTimeout(function()
                         {
                             gameManager.gameOverAlert("computer");
-                        }, 10);
+                        }, 10
+                        );
                     }
                 }
                 
@@ -535,47 +551,29 @@ class GameBoard{
 
 
 
-function gameOverAlert(loser)
-{
 
-    
-        if (loser === "player")
-        {
-                alert("You Lost!");   
-        }
-        else if (loser === "computer")
-        {
-                alert("You Won!");
-        }
-   
-}
 
 
 //////////////////////
 
-const playerOne = new Player("Player One", [], 5, [1,1,2,3,4], true);
-const playerTwo = new Player("Computer", [], 5, [1,1,2,3,4], false);
+
+    const playerOne = new Player("Player One", [], 5, [1,1,2,3,4], true);
+    const playerTwo = new Player("Computer", [], 5, [1,1,2,3,4], false);
 
 
-const gameManager = new GameManager(playerOne);
-
-
-
-console.log(playerOne);
-console.log(playerTwo);
+    const gameManager = new GameManager(playerOne);
 
 
 
 
-const playerOneGameBoard = gameManager.createGameBoard("player-one", 8,8);
-console.log(playerOneGameBoard.boardPieces);
-const playerTwoGameBoard = gameManager.createGameBoard("player-two", 8,8);
 
-playerOne.placeShips(playerOneGameBoard);
-playerTwo.placeShips(playerTwoGameBoard);
+    const playerOneGameBoard = gameManager.createGameBoard("player-one", 8,8);
+    const playerTwoGameBoard = gameManager.createGameBoard("player-two", 8,8);
+
+    playerOne.placeShips(playerOneGameBoard);
+    playerTwo.placeShips(playerTwoGameBoard);
 
 
-// newGameBoard.recieveAttack([3,3]);
 
 
 /*

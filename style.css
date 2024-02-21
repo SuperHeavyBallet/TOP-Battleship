@@ -2,6 +2,12 @@
     box-sizing: border-box;
 }
 
+body{
+    background-color: rgb(96, 106, 141);
+    color: rgb(255, 255, 255);
+
+}
+
 .game-container{
     display: flex;
     flex-direction: row;
@@ -21,6 +27,8 @@
     flex-direction: column;
     align-items: center;
 }
+
+
 
 .gameboard-container{
     border: 1px solid blue;
@@ -90,4 +98,28 @@
 }
 .hidden{
     display: none;
+}
+
+.play-again-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.play-again-button{
+    border: 1px solid black;
+    background-color: rgb(253, 0, 0);
+
+
+
+    
+    
+    
+}
+
+.play-again-button > h4{
+    color: rgb(255, 255, 255);
+    margin: 0;
+    padding: 10px;
 }
