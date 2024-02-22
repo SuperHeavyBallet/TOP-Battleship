@@ -1,9 +1,10 @@
 class GameManager
 {
-    constructor(playerOne)
+    constructor(playerOne, refineComputerSelection, lastComputerSelectedSquare)
     {
         this.playerOne = playerOne;
-
+        this.refineComputerSelection = refineComputerSelection;
+        this.lastComputerSelectedSquare = lastComputerSelectedSquare;
     }
 
     createGameBoard(name, rows, columns)
@@ -11,18 +12,17 @@ class GameManager
         return new GameBoard(name, rows, columns);
     }
 
+ 
+
 
     switchTurns()
     {
-
         const playerTurnIndicator = document.getElementById("player-turn-indicator");
         const computerTurnIndicator = document.getElementById("computer-turn-indicator");
         const gameBoardLockPlayer = document.getElementById("gameboard-lock");
 
-
         if (playerOne.isPlayerTurn)
         {
-
             gameBoardLockPlayer.classList.remove("hidden");
 
             playerTurnIndicator.textContent = ("GO");
@@ -34,31 +34,26 @@ class GameManager
         }
         else if (!playerOne.isPlayerTurn)
         {
-            
             gameBoardLockPlayer.classList.add("hidden");
-
-            
 
             playerTurnIndicator.textContent = ("WAIT");
             computerTurnIndicator.textContent = ("GO");
 
             playerOne.isPlayerTurn = true;
         }
-
-        console.log("Player TUrn?" , playerOne.isPlayerTurn);
     }
 
     computerWait()
     {
         const waitTime = Math.floor(Math.random() * 3000);
         console.log(waitTime);
-        setTimeout(this.generateComputerMove, waitTime);
-        //generateComputerMove();
+        setTimeout(this.generateComputerMove.bind(this), waitTime);
     }
 
     generateComputerMove()
     {
         let availableSquares = [];
+        let refinedAvailableSquares = [];
         let hitSquares = [];
 
         for (let i = 0; i < playerOneGameBoard.boardPieces.length; i++)
@@ -76,14 +71,42 @@ class GameManager
             }
         }
 
-        console.log("Hit: ", hitSquares);
-        console.log("Available: " ,availableSquares);
+        if (this.refineComputerSelection)
+        {
+            for (let i = 0; i < availableSquares.length; i++)
+            {
+                if (Math.abs(availableSquares[i].position[0] - this.lastComputerSelectedSquare.position[0] === 1 &&
+                    availableSquares[i].position[1] - this.lastComputerSelectedSquare.position[1] === 1)
+                    ||
+                    Math.abs(availableSquares[i].position[1] - this.lastComputerSelectedSquare.position[1]) === 1 &&
+                    availableSquares[i].position[0] === this.lastComputerSelectedSquare.position[0])
+                    {
+                        refinedAvailableSquares.push(availableSquares[i]);
+                    } 
+            }
 
-        const randomNumber = Math.floor(Math.random() * availableSquares.length);
-        console.log(randomNumber);
-        console.log("Selected Square: ", availableSquares[randomNumber]);
-
-        playerOneGameBoard.recieveAttack(availableSquares[randomNumber], playerOneGameBoard);
+            if (refinedAvailableSquares.length > 0)
+            {
+                const randomNumber = Math.floor(Math.random() * refinedAvailableSquares.length);
+                const selectedSquare = refinedAvailableSquares[randomNumber];
+                this.lastComputerSelectedSquare = selectedSquare;
+                playerOneGameBoard.recieveAttack(selectedSquare, playerOneGameBoard);
+            }
+            else
+            {
+                const randomNumber = Math.floor(Math.random() * availableSquares.length);
+                const selectedSquare = availableSquares[randomNumber];
+                this.lastComputerSelectedSquare = selectedSquare;
+                playerOneGameBoard.recieveAttack(selectedSquare, playerOneGameBoard);
+            }
+        }
+        else if (!this.refineComputerSelection)
+        {
+            const randomNumber = Math.floor(Math.random() * availableSquares.length);
+            const selectedSquare = availableSquares[randomNumber];
+            this.lastComputerSelectedSquare = selectedSquare;
+            playerOneGameBoard.recieveAttack(selectedSquare, playerOneGameBoard);
+        }
     }
 
     gameOverLockScreen(loser)
@@ -97,23 +120,19 @@ class GameManager
         gameBoardLockPlayer.classList.add("gameboard-gameover-lock");
         gameBoardLockComputer.classList.add("gameboard-gameover-lock");
 
-        this.replayButton();
-
-        
+        this.replayButton();   
     }
 
     gameOverAlert(loser)
     {
-
-        
-            if (loser === "player")
-            {
-                    alert("You Lost!");   
-            }
-            else if (loser === "computer")
-            {
-                    alert("You Won!");
-            }
+        if (loser === "player")
+        {
+            alert("You Lost!");   
+        }
+        else if (loser === "computer")
+        {
+            alert("You Won!");
+        }
     
     }
 
@@ -125,12 +144,9 @@ class GameManager
         replayButton.addEventListener('click', () =>
         {
             console.log("Clicked Replay");
-            //createGame();
-        });
+            location.reload();
+        }, {once : true} );
     }
-
-
-
 }
 
 ///////////////////// Player
@@ -147,18 +163,23 @@ class Player
         this.isPlayerTurn = isPlayerTurn;
     }
 
+    createNewShip(length, numberOfHits, isSunk)
+    {
+        return new Ship(length, numberOfHits, isSunk);
+    }
+
+    checkShipStats(ship)
+    {
+        return [ship.length, ship.numberOfHits, ship.isSunk];
+    }
+
     placeShips(playerBoard)
     {
-        console.log(this.playerShips);
-
         playerBoard.placeShip(this.playerShips[0], [[3,3]]);
         playerBoard.placeShip(this.playerShips[1], [[7,6]]);
         playerBoard.placeShip(this.playerShips[2], [[1,1],[1,2]]);
         playerBoard.placeShip(this.playerShips[3], [[1,4],[1,5],[1,6]]);
         playerBoard.placeShip(this.playerShips[4], [[6,4],[6,5],[6,6],[6,7]]);
-     
-
-
     }
 
     calculateHitsAvailable()
@@ -181,9 +202,7 @@ class Player
         for (let i = 0; i < this.playerShips.length; i++)
         {
             const thisShipHits = this.playerShips[i].numberOfHits;
-            totalHitsTaken = totalHitsTaken + thisShipHits;
-
-            
+            totalHitsTaken = totalHitsTaken + thisShipHits; 
         }
 
         const hitsRemaining = this.hitsAvailable - totalHitsTaken;
@@ -196,17 +215,14 @@ class Player
         return hitsRemaining;
     }
 
-    // Create the entire fleet for a player, args are total number and an array of the ship lengths
     createShipFleet(numberOfShips, shipLengths)
     {
-
         for (let i = 0; i < numberOfShips; i++)
         {
             const currentShipLength = shipLengths[i];
-            const newShip = createNewShip(currentShipLength, 0, false);
+            const newShip = this.createNewShip(currentShipLength, 0, false);
             this.playerShips.push(newShip);
         }
-
     }
 }
 
@@ -223,55 +239,21 @@ class Ship{
 
     hit()
     {
-        console.log("Hit Function");
         this.numberOfHits += 1;
-        console.log("Num of Hits: " , this.numberOfHits);
-        console.log(`Ship ${this}, took a hit!`);
     }
 
     checkIfSunk()
     {
-        console.log("Check If Function");
         if (this.numberOfHits === this.length)
         {
-
             this.isSunk = true;
-            console.log(`This ship is sunk!`);
-            console.log(`___________________`);
-    
-        }
-        else
-        {
-            console.log(`She's still afloat!`);
-            console.log(`___________________`);
         }
     }
 }
 
-function createNewShip(length, numberOfHits, isSunk)
-{
-    return new Ship(length, numberOfHits, isSunk);
-}
 
-function checkShipStats(ship)
-{
-    return [ship.length, ship.numberOfHits, ship.isSunk];
-}
 
-function hitShip(ship,position)
-{
-    if (!position.hit)
-    {
-        position.hit = true;
-        console.log("Hit Ship Function");
-        ship.hit();
-        ship.checkIfSunk();
-    }
-    else{
-        console.log("Already Hit!");
-    }
-    
-}
+
 
 //////////////////////
 
@@ -438,8 +420,13 @@ class GameBoard{
                 this.boardMatrix[row][col] =  'X';
                 ship.occupiedSquares.push([row,col]);
                 //this.boardPieceElements[row][col].textContent = "x";
+
+                if (this === playerOneGameBoard)
+                {
+
                 this.boardPieceElements[row][col].classList.add("ship-square");
 
+                }
 
             }
         
@@ -462,9 +449,10 @@ class GameBoard{
         if (this.boardPieces[row][col].hasShip)
         {
             console.log("Hit a ship!");
+            gameManager.refineComputerSelection = true;
             console.log(this.boardPieces[row][col].val);
 
-            hitShip(this.boardPieces[row][col].val, this.boardPieces[row][col]);
+            this.hitShip(this.boardPieces[row][col].val, this.boardPieces[row][col]);
             
            
                 playerGameBoard.boardPieceElements[row][col].classList.remove("ship-square");
@@ -514,8 +502,24 @@ class GameBoard{
         else
         {
             console.log("Miss!");
+            gameManager.refineComputerSelection = false;
             this.hitMiss(position.position, playerGameBoard);
         }
+    }
+
+    hitShip(ship,position)
+    {
+        if (!position.hit)
+        {
+            position.hit = true;
+            console.log("Hit Ship Function");
+            ship.hit();
+            ship.checkIfSunk();
+        }
+        else{
+            console.log("Already Hit!");
+        }
+        
     }
 
     hitMiss(position, playerGameBoard)
@@ -541,37 +545,19 @@ class GameBoard{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //////////////////////
 
 
-    const playerOne = new Player("Player One", [], 5, [1,1,2,3,4], true);
-    const playerTwo = new Player("Computer", [], 5, [1,1,2,3,4], false);
+const playerOne = new Player("Player One", [], 5, [1,1,2,3,4], true);
+const playerTwo = new Player("Computer", [], 5, [1,1,2,3,4], false);
 
+const gameManager = new GameManager(playerOne, false, {});
 
-    const gameManager = new GameManager(playerOne);
+const playerOneGameBoard = gameManager.createGameBoard("player-one", 8,8);
+const playerTwoGameBoard = gameManager.createGameBoard("player-two", 8,8);
 
-
-
-
-
-    const playerOneGameBoard = gameManager.createGameBoard("player-one", 8,8);
-    const playerTwoGameBoard = gameManager.createGameBoard("player-two", 8,8);
-
-    playerOne.placeShips(playerOneGameBoard);
-    playerTwo.placeShips(playerTwoGameBoard);
+playerOne.placeShips(playerOneGameBoard);
+playerTwo.placeShips(playerTwoGameBoard);
 
 
 
