@@ -175,11 +175,57 @@ class Player
 
     placeShips(playerBoard)
     {
-        playerBoard.placeShip(this.playerShips[0], [[3,3]]);
-        playerBoard.placeShip(this.playerShips[1], [[7,6]]);
-        playerBoard.placeShip(this.playerShips[2], [[1,1],[1,2]]);
-        playerBoard.placeShip(this.playerShips[3], [[1,4],[1,5],[1,6]]);
-        playerBoard.placeShip(this.playerShips[4], [[6,4],[6,5],[6,6],[6,7]]);
+
+        
+
+        const placeLayouts = [
+            [
+                [this.playerShips[0], [[3,3]] ],
+                [this.playerShips[1], [[7,6]] ],
+                [this.playerShips[2], [[1,1],[1,2]] ],
+                [this.playerShips[3], [[1,4],[1,5],[1,6]] ],
+                [this.playerShips[4], [[6,4],[6,5],[6,6],[6,7]] ],
+            ],
+            [
+                [this.playerShips[0], [[1,1]] ],
+                [this.playerShips[1], [[3,4]] ],
+                [this.playerShips[2], [[5,5],[6,5]] ],
+                [this.playerShips[3], [[7,7],[7,6],[7,5]] ],
+                [this.playerShips[4], [[2,2],[3,2],[4,2],[5,2]] ],
+            ],
+            [
+                [this.playerShips[0], [[5,7]] ],
+                [this.playerShips[1], [[2,1]] ],
+                [this.playerShips[2], [[6,3],[6,2]] ],
+                [this.playerShips[3], [[1,7],[2,7],[3,7]] ],
+                [this.playerShips[4], [[0,2],[0,3],[0,4],[0,5]] ],
+            ],
+            [],
+            [],
+            []
+
+          
+            
+        ];
+
+        const chosenLayout = Math.floor(Math.random() * (3));
+        console.log("HMMMMMMMMMM",chosenLayout);
+        playerBoard.placeShip(placeLayouts[chosenLayout][0][0], placeLayouts[chosenLayout][0][1]);
+        playerBoard.placeShip(placeLayouts[chosenLayout][1][0], placeLayouts[chosenLayout][1][1]);
+        playerBoard.placeShip(placeLayouts[chosenLayout][2][0], placeLayouts[chosenLayout][2][1]);
+        playerBoard.placeShip(placeLayouts[chosenLayout][3][0], placeLayouts[chosenLayout][3][1]);
+        playerBoard.placeShip(placeLayouts[chosenLayout][4][0], placeLayouts[chosenLayout][4][1]);
+
+        
+
+        
+           //playerBoard.placeShip(this.playerShips[0], [[3,3]]);
+           // playerBoard.placeShip(this.playerShips[1], [[7,6]]);
+           // playerBoard.placeShip(this.playerShips[2], [[1,1],[1,2]]);
+            //playerBoard.placeShip(this.playerShips[3], [[1,4],[1,5],[1,6]]);
+            //playerBoard.placeShip(this.playerShips[4], [[6,4],[6,5],[6,6],[6,7]]);
+            
+
     }
 
     calculateHitsAvailable()
@@ -411,6 +457,8 @@ class GameBoard{
         {
             for (let i = 0; i < ship.length; i++)
             {
+
+                document.get
                 const row = position[i][0];
                 const col = position[i][1];
                 const positionPiece = this.boardPieces[row][col];
@@ -419,7 +467,6 @@ class GameBoard{
                 positionPiece.hasShip = true;
                 this.boardMatrix[row][col] =  'X';
                 ship.occupiedSquares.push([row,col]);
-                //this.boardPieceElements[row][col].textContent = "x";
 
                 if (this === playerOneGameBoard)
                 {
