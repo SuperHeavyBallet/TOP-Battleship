@@ -10,6 +10,7 @@ Update Text UI
 
 Update aesthetic
 - Potentially go with old school metal and bevels with Hazard stripes :P
+- Create UI elements to represent actual ships and their hit status
 
 - /// Fix Player ships not turning red on hit
 - /// Work on end state when all ships destroyed
@@ -20,8 +21,9 @@ Update aesthetic
 hits and keep attacking near there
 - /// Create Reset Game Loop
 - /// Hide Enemy Ships for Player
-- Create Random Placement of fleet at start
-- Allow Vertical ship placement
+- /// Create Random Placement of fleet at start - Pseudo Random, pick from list
+- /// Prevent player and enemy ship placement to be the same, player can guess positions
+- /// Allow Vertical ship placement
 
 
 
