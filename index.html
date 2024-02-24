@@ -8,15 +8,19 @@
     <link href="./style.css" rel="stylesheet">
 </head>
 <body>
+    <div class="title">BATTLESHIP</div>
     <div class="game-container">
+        
+        
     <div id="player-one-container" class="player-container one">
         <div id="player-one-stats-container" class="player-stats-container one">
-            <h6 id="hits-remaining-player">Hits Remaining: 11</h6>
-            <h6 id="player-turn-indicator">WAIT</h6>
+            
+            <h6 id="player-turn-indicator" class="turn-indicator red-text">WAIT</h6>
+            <span id="player-light" class="dot red"></span>
 
         </div>
 
-        <div>Your Fleet:</div>
+        
         <div id="player-one-gameboard-container" class="gameboard-container">
             
 
@@ -24,17 +28,19 @@
 
            
         </div>
+        <div class="player-fleet-text green-text">Your Ships</div>
         
     </div>
 
     <div id="player-two-container" class="player-container two">
         <div id="player-two-stats-container" class="player-stats-container two">
-            <h6 id="hits-remaining-computer">Hits Remaining: 11</h6>
-            <h6 id="computer-turn-indicator">GO</h6>
+           
+            <h6 id="computer-turn-indicator" class="turn-indicator green-text">GO</h6>
+            <span id="computer-light" class="dot green"></span>
 
         </div>
 
-        <div>Enemy Fleet:</div>
+        
 
         <div id="player-two-gameboard-container" class="gameboard-container">
            
@@ -42,6 +48,7 @@
             <div id="gameboard-lock" class="gameboard-lock hidden"></div>
             
         </div>
+        <div class="computer-fleet-text red-text">Enemy Ships</div>
        
     </div>
 
@@ -49,8 +56,8 @@
 </div>
 
 <div id="play-again-container" class="play-again-container">
-    <div id="play-again-button" class="play-again-button hidden">
-        <h4>Play Again?</h4>
+    <div id="play-again-button" class="play-again-button ">
+        <h4 id="play-again-button-text">Reload</h4>
     </div>
 </div>
 </body>

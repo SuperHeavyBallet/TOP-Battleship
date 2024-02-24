@@ -5,6 +5,7 @@ class GameManager
         this.playerOne = playerOne;
         this.refineComputerSelection = refineComputerSelection;
         this.lastComputerSelectedSquare = lastComputerSelectedSquare;
+        this.reloadButton();
     }
 
     createGameBoard(name, rows, columns)
@@ -17,13 +18,28 @@ class GameManager
         const playerTurnIndicator = document.getElementById("player-turn-indicator");
         const computerTurnIndicator = document.getElementById("computer-turn-indicator");
         const gameBoardLockPlayer = document.getElementById("gameboard-lock");
+        const playerLight = document.getElementById("player-light");
+        const computerLight = document.getElementById("computer-light");
 
         if (playerOne.isPlayerTurn)
         {
             gameBoardLockPlayer.classList.remove("hidden");
 
             playerTurnIndicator.textContent = ("GO");
+
+            playerLight.classList.remove("red");
+            playerLight.classList.add("green");
+
+            playerTurnIndicator.classList.remove("red-text");
+            playerTurnIndicator.classList.add("green-text");
+            
             computerTurnIndicator.textContent = ("WAIT");
+
+            computerLight.classList.remove("green");
+            computerLight.classList.add("red");
+
+            computerTurnIndicator.classList.remove("green-text");
+            computerTurnIndicator.classList.add("red-text");
 
             playerOne.isPlayerTurn = false;
             
@@ -34,7 +50,20 @@ class GameManager
             gameBoardLockPlayer.classList.add("hidden");
 
             playerTurnIndicator.textContent = ("WAIT");
+
+            playerLight.classList.remove("green");
+            playerLight.classList.add("red");
+
+            playerTurnIndicator.classList.remove("green-text");
+            playerTurnIndicator.classList.add("red-text");
+
             computerTurnIndicator.textContent = ("GO");
+
+            computerLight.classList.remove("red");
+            computerLight.classList.add("green");
+
+            computerTurnIndicator.classList.remove("red-text");
+            computerTurnIndicator.classList.add("green-text");
 
             playerOne.isPlayerTurn = true;
         }
@@ -105,16 +134,47 @@ class GameManager
         }
     }
 
-    gameOverLockScreen(loser)
+    gameOverLockScreen(winner)
     {
         const gameBoardLockPlayer = document.getElementById("gameboard-lock-player");
         const gameBoardLockComputer = document.getElementById("gameboard-lock");
 
+
+        const playerWinTextDisplay = document.getElementById("player-turn-indicator");
+        const computerWinTextDisplay = document.getElementById("computer-turn-indicator");
+
+        
         gameBoardLockPlayer.classList.remove("hidden");
         gameBoardLockComputer.classList.remove("hidden");
 
         gameBoardLockPlayer.classList.add("gameboard-gameover-lock");
         gameBoardLockComputer.classList.add("gameboard-gameover-lock");
+
+        if (winner === "player")
+        {
+            playerWinTextDisplay.textContent = 'WIN';
+            playerWinTextDisplay.classList.remove("red-text");
+            playerWinTextDisplay.classList.add("green-text");
+
+            computerWinTextDisplay.textContent = "LOSE";
+            computerWinTextDisplay.classList.remove("green-text");
+            computerWinTextDisplay.classList.add("red-text");
+
+        }
+        else if (winner === "computer")
+        {
+            playerWinTextDisplay.textContent = 'LOSE';
+            playerWinTextDisplay.classList.remove("green-text");
+            playerWinTextDisplay.classList.add("red-text");
+
+            computerWinTextDisplay.textContent = "WIN";
+            computerWinTextDisplay.classList.remove("red-text");
+            computerWinTextDisplay.classList.add("green-text");
+
+    
+
+            
+        }
 
         this.replayButton();   
     }
@@ -132,15 +192,21 @@ class GameManager
     
     }
 
-    replayButton()
+    reloadButton()
     {
-        const replayButton = document.getElementById("play-again-button");
-        replayButton.classList.remove("hidden");
-
-        replayButton.addEventListener('click', () =>
+        const reploadButton = document.getElementById("play-again-button");
+        reploadButton.addEventListener('click', () =>
         {
             location.reload();
         }, {once : true} );
+    }
+
+    replayButton()
+    {
+        const replayButton = document.getElementById("play-again-button-text");
+        replayButton.textContent = "Play Again?"
+
+        
     }
 }
 
@@ -592,8 +658,8 @@ class GameBoard{
                 if (playerGameBoard === playerOneGameBoard)
                 {
                     playerOne.hitsRemaining -=1;
-                    const hitsRemainingPlayer = document.getElementById("hits-remaining-player");
-                    hitsRemainingPlayer.textContent = (`Hits Remaining: ${playerOne.hitsRemaining}`);
+                    //const hitsRemainingPlayer = document.getElementById("hits-remaining-player");
+                    //hitsRemainingPlayer.textContent = (`Hits Remaining: ${playerOne.hitsRemaining}`);
 
                     //console.log("PLAYER 1 FLEET", playerOne.playerShips);
 
@@ -616,9 +682,9 @@ class GameBoard{
                 else if (playerGameBoard === playerTwoGameBoard)
                 {
                     playerTwo.hitsRemaining -=1;
-                    const hitsRemainingComputer = document.getElementById("hits-remaining-computer");
+                    //const hitsRemainingComputer = document.getElementById("hits-remaining-computer");
                     //console.log(hitsRemainingComputer);
-                    hitsRemainingComputer.textContent = (`Hits Remaining: ${playerTwo.hitsRemaining}`);
+                    //hitsRemainingComputer.textContent = (`Hits Remaining: ${playerTwo.hitsRemaining}`);
 
                     //console.log("PLAYER 2 FLEET", playerTwo.playerShips);
 
